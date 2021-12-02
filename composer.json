@@ -1,0 +1,29 @@
+{
+    "name": "programster/date-time-lib",
+    "type": "library",
+    "description": "A library to make it easier to work with dates/times.",
+    "keywords": ["time", "dates","library"],
+    "homepage": "http://blog.programster.org",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Stuart Page",
+            "email": "sdpagent@gmail.com",
+            "homepage": "http://blog.programster.org/",
+            "role": "Master of the universe."
+        }
+    ],
+    "require": {
+        "php": ">=8.0.0",
+        "brick/date-time": "^0.3"
+    },
+    "require-dev": {
+        "irap/autoloader": "1.0.*",
+        "programster/core-libs": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Programster\\DateTime\\": "src/"
+        }
+    }
+}
