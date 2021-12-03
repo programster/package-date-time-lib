@@ -89,6 +89,72 @@ final class TimeLib extends \Exception
 
 
     /**
+     * Converts a given set of dates, into an array of LocalDateRange objects with each LocalDateRange representing
+     * a contiguous range of dates that were provided.
+     * @param \Brick\DateTime\LocalDate $dates
+     * @return LocalDateCollection
+     */
+    public static function convertDatesToContiguousDateRanges(\Brick\DateTime\LocalDate ...$dates) : array
+    {
+        $ranges = [];
+        $sets = [];
+
+        if (count($dates) > 0)
+        {
+            $sorter = function(\Brick\DateTime\LocalDate $a, \Brick\DateTime\LocalDate $b) {
+                return $a->compareTo($b);
+            };
+
+            usort($dates, $sorter);
+            $previousDate = null;
+            $currentSet = [];
+
+            foreach ($dates as $loopDate)
+            {
+                if ($previousDate !== null)
+                {
+                    $difference = $loopDate->toEpochDay() - $previousDate->toEpochDay();
+
+                    if ($difference === 0)
+                    {
+                        // do nothing
+                    }
+                    elseif ($difference === 1)
+                    {
+                        $currentSet[] = $loopDate;
+                    }
+                    else
+                    {
+                        // difference is greater than 1.
+                        $sets[] = new LocalDateCollection(...$currentSet);
+                        $currentSet = [$loopDate];
+                    }
+                }
+                else
+                {
+                    $currentSet[] = $loopDate;
+                }
+
+                $previousDate = $loopDate;
+            }
+        }
+
+        if (count($currentSet) > 0)
+        {
+            $sets[] = new LocalDateCollection(...$currentSet);
+        }
+
+        foreach ($sets as $set)
+        {
+            // convert the set to a localdaterange
+            $ranges[] = \Brick\DateTime\LocalDateRange::of($set[0], $set[(count($set) - 1)]);
+        }
+
+        return $ranges;
+    }
+
+
+    /**
      * Given a set of dates (at least 2), return all the weekend dates that fall within that set's range. This will include
      * dates that are not necessarily in the set itself.
      * If you want the dates that are in the set that are on the weekend, use the getWeekendDatesInSet() method.
