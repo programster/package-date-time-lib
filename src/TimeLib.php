@@ -165,7 +165,7 @@ final class TimeLib extends \Exception
     public static function getWeekendsBetweenDates(array $weekendDays = [6, 7], Brick\DateTime\LocalDate ...$dates)
     {
         $min = \Brick\DateTime\LocalDate::minOf($dates);
-        $max = \Brick\DateTime\LocalDate::minOf($dates);
+        $max = \Brick\DateTime\LocalDate::maxOf($dates);
 
         $weekendDates = [];
 
