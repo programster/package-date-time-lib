@@ -15,7 +15,7 @@
     ],
     "require": {
         "php": ">=8.0.0",
-        "brick/date-time": "^0.3"
+        "brick/date-time": "^0.4"
     },
     "require-dev": {
         "irap/autoloader": "1.0.*",

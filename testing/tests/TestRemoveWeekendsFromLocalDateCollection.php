@@ -40,8 +40,6 @@ class TestRemoveWeekendsFromLocalDateCollection implements TestInterface
                     break;
                 }
             }
-
-            die(print_r($arrayOfDates, true));
         }
         catch (Brick\DateTime\DateTimeException $ex)
         {
