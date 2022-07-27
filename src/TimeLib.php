@@ -8,6 +8,8 @@ declare(strict_types = 1);
 namespace Programster\DateTime;
 
 
+use Brick\DateTime\LocalDateRange;
+
 final class TimeLib extends \Exception
 {
     /**
@@ -173,7 +175,7 @@ final class TimeLib extends \Exception
         {
             $date = \Brick\DateTime\LocalDate::ofEpochDay($i);
 
-            if (in_array($date->getDayOfWeek(), $weekendDays))
+            if (in_array($date->getDayOfWeek()->getValue(), $weekendDays))
             {
                 $weekendDates[] = $date;
             }
@@ -195,7 +197,7 @@ final class TimeLib extends \Exception
 
         foreach ($dates as $date)
         {
-            if (in_array($date->getDayOfWeek(), $weekendDays))
+            if (in_array($date->getDayOfWeek()->getValue(), $weekendDays))
             {
                 $weekendDates[] = $date;
             }
@@ -237,5 +239,25 @@ final class TimeLib extends \Exception
         }
 
         return $intersectionCollection;
+    }
+
+
+    /**
+     * Converts a LocalDateRange object into a LocalDateCollection which contains the full list of
+     * dates between the start and end dates of the date range.
+     * @param LocalDateRange $dateRange
+     * @return LocalDateCollection
+     */
+    public static function convertDateRangeToDateCollection(LocalDateRange $dateRange) : LocalDateCollection
+    {
+        $dates = [];
+        $iterator = $dateRange->getIterator();
+
+        foreach ($iterator as $dateInRange)
+        {
+            $dates[] = $dateInRange;
+        }
+
+        return new LocalDateCollection(...$dates);
     }
 }

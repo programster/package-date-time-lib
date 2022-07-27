@@ -37,4 +37,29 @@ final class LocalDateCollection extends \ArrayObject
             throw new Exception("Cannot add a non LocalDate value to a " . __CLASS__);
         }
     }
+
+
+    /**
+     * Removes any weekend dates from this date collection.
+     * @param array $weekendDays - optionally override the days of the week that count as weekends. The
+     * default is for the weekend to be on Saturday/Sunday.
+     * @return void
+     */
+    public function removeWeekends(
+        array $weekendDays = [6, 7]
+    ) : void
+    {
+        foreach ($this as $key => $date)
+        {
+            if (in_array($date->getDayOfWeek()->getValue(), $weekendDays))
+            {
+                $keysToRemove[] = $key;
+            }
+        }
+        
+        foreach ($keysToRemove as $key)
+        {
+            $this->offsetUnset($key);
+        }
+    }
 }
