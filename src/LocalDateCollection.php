@@ -40,26 +40,25 @@ final class LocalDateCollection extends \ArrayObject
 
 
     /**
-     * Removes any weekend dates from this date collection.
+     * Gets a copy of this object without any weekend dates in it.
      * @param array $weekendDays - optionally override the days of the week that count as weekends. The
      * default is for the weekend to be on Saturday/Sunday.
-     * @return void
+     * @return LocalDateCollection - a copy of this object, but without any weekend dates.
      */
-    public function removeWeekends(
+    public function withoutWeekends(
         array $weekendDays = [6, 7]
-    ) : void
+    ) : LocalDateCollection
     {
-        foreach ($this as $key => $date)
+        $dates = $this->getArrayCopy();
+
+        foreach ($dates as $index => $date)
         {
             if (in_array($date->getDayOfWeek()->getValue(), $weekendDays))
             {
-                $keysToRemove[] = $key;
+                unset($dates[$index]);
             }
         }
-        
-        foreach ($keysToRemove as $key)
-        {
-            $this->offsetUnset($key);
-        }
+
+        return new LocalDateCollection(...$dates);
     }
 }

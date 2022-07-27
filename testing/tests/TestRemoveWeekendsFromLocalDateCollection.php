@@ -28,8 +28,8 @@ class TestRemoveWeekendsFromLocalDateCollection implements TestInterface
             $endDate = \Brick\DateTime\LocalDate::of(2022, 07, 31);
             $dateRange = \Brick\DateTime\LocalDateRange::of($startDate, $endDate);
             $dates = \Programster\DateTime\TimeLib::convertDateRangeToDateCollection($dateRange);
-            $dates->removeWeekends();
-            $arrayOfDates = $dates->getArrayCopy();
+            $datesWithoutWeekends = $dates->withoutWeekends();
+            $arrayOfDates = $datesWithoutWeekends->getArrayCopy();
 
             foreach ($arrayOfDates as $index => $localDate)
             {
