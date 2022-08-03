@@ -5,11 +5,36 @@ declare(strict_types = 1);
 namespace Programster\DateTime;
 
 
+use Brick\DateTime\LocalDate;
+
 final class LocalDateCollection extends \ArrayObject
 {
     public function __construct(\Brick\DateTime\LocalDate ...$dates)
     {
         parent::__construct($dates);
+    }
+
+
+    /**
+     * Create one of these collections from an array of dates in string format.
+     * @param array $dates - the array of dates in string format. E.g. ['2020-12-25', '2020-12-26']
+     * @param $format - the format the string dates are expected to be in. E.g. Y-m-d for 2020-12-25 for Christmas.
+     * @return LocalDateCollection
+     */
+    public static function fromArrayOfStringDates(
+        array  $dates,
+        string $format = 'Y-m-d'
+    ) : LocalDateCollection
+    {
+        $localDates = [];
+
+        foreach ($dates as $dateString)
+        {
+            $datetime = \DateTime::createFromFormat($format, $dateString);
+            $localDates[] = LocalDate::fromNativeDateTime($datetime);
+        }
+
+        return new LocalDateCollection(...$localDates);
     }
 
 
@@ -60,5 +85,51 @@ final class LocalDateCollection extends \ArrayObject
         }
 
         return new LocalDateCollection(...$dates);
+    }
+
+
+    /**
+     * Get a copy of this collection, but one that does not contain the dates in the collection provided.
+     * @param LocalDateCollection $dates - the collection of dates we do not wish to contain.
+     * @return LocalDateCollection - the new (modified) copy of the collection
+     */
+    public function withoutDatesInCollection(LocalDateCollection $dates) : LocalDateCollection
+    {
+        $thisObjectsDates = $this->getArrayOfStringsForm();
+        $otherObjectsDates = $dates->getArrayOfStringsForm();
+        $remainingDates = array_diff($thisObjectsDates, $otherObjectsDates);
+        return LocalDateCollection::fromArrayOfStringDates($remainingDates);
+    }
+
+
+    /**
+     * Get a copy of this collection, but one that does not contain the dates provided.
+     * @param LocalDate ...$dates - the dates we do not wish to contain.
+     * @return LocalDateCollection - the new (modified) copy of the collection
+     */
+    public function withoutDates(LocalDate ...$dates)
+    {
+        return $this->withoutDatesInCollection(new LocalDateCollection(...$dates));
+    }
+
+
+    /**
+     * Convert this collection of LocalDate objects into an array of string dates.
+     * @param $format - optionally change the format of the strings. Default is Y-m-d to match MySQL and PgSQL
+     * @return array
+     */
+    public function getArrayOfStringsForm($format = 'Y-m-d')
+    {
+        $newForm = [];
+
+        $dates = $this->getArrayCopy();
+
+        foreach ($dates as $date)
+        {
+            /* @var $date \Brick\DateTime\LocalDate */
+            $newForm[] = $date->toNativeDateTime()->format($format);
+        }
+
+        return $newForm;
     }
 }
