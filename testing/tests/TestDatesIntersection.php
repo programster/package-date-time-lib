@@ -6,6 +6,10 @@
 
 declare(strict_types = 1);
 
+use Brick\DateTime\LocalDate;
+use Programster\DateTime\LocalDateCollection;
+use Programster\DateTime\TimeLib;
+
 class TestDatesIntersection implements TestInterface
 {
     private bool $m_passed;
@@ -19,17 +23,17 @@ class TestDatesIntersection implements TestInterface
 
     public function run()
     {
-        $dayBefore = Brick\DateTime\LocalDate::of(2024, 2, 28);
+        $dayBefore = LocalDate::of(2024, 2, 28);
 
         // 29th of february is the next leap day.
-        $leapDay = Brick\DateTime\LocalDate::of(2024, 2, 29);
+        $leapDay = LocalDate::of(2024, 2, 29);
 
-        $dayAfter = Brick\DateTime\LocalDate::of(2024, 3, 1);
+        $dayAfter = LocalDate::of(2024, 3, 1);
 
-        $intersectionCollection = Programster\DateTime\TimeLib::getDatesIntersection(
-            new \Programster\DateTime\LocalDateCollection($dayBefore, $leapDay, $dayAfter),
-            new \Programster\DateTime\LocalDateCollection($leapDay, $dayBefore),
-            new \Programster\DateTime\LocalDateCollection($dayBefore, $dayAfter),
+        $intersectionCollection = TimeLib::getDatesIntersection(
+            new LocalDateCollection($dayBefore, $leapDay, $dayAfter),
+            new LocalDateCollection($leapDay, $dayBefore),
+            new LocalDateCollection($dayBefore, $dayAfter),
         );
 
         if (count($intersectionCollection) === 1)

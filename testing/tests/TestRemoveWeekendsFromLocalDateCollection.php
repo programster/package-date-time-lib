@@ -19,7 +19,7 @@ class TestRemoveWeekendsFromLocalDateCollection implements TestInterface
     }
 
 
-    public function run()
+    public function run(): void
     {
         try
         {
@@ -31,10 +31,10 @@ class TestRemoveWeekendsFromLocalDateCollection implements TestInterface
             $datesWithoutWeekends = $dates->withoutWeekends();
             $arrayOfDates = $datesWithoutWeekends->getArrayCopy();
 
-            foreach ($arrayOfDates as $index => $localDate)
+            foreach ($arrayOfDates as $localDate)
             {
                 /* @var $localDate \Brick\DateTime\LocalDate */
-                if ($localDate->getDayOfWeek()->getValue() === 6 || $localDate->getDayOfWeek()->getValue() === 7)
+                if (in_array($localDate->getDayOfWeek()->value, [6,7]))
                 {
                     $this->m_passed = false;
                     break;

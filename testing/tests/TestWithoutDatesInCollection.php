@@ -6,6 +6,9 @@
 
 declare(strict_types = 1);
 
+use Brick\DateTime\LocalDate;
+use Programster\DateTime\LocalDateCollection;
+
 class TestWithoutDatesInCollection implements TestInterface
 {
     private bool $m_passed;
@@ -21,14 +24,14 @@ class TestWithoutDatesInCollection implements TestInterface
     {
         $this->m_passed = true;
 
-        $undesiredDate1 = \Brick\DateTime\LocalDate::of(2020,12,25);
-        $undesiredDate2 = \Brick\DateTime\LocalDate::of(2020,12,28);
+        $undesiredDate1 = LocalDate::of(2020,12,25);
+        $undesiredDate2 = LocalDate::of(2020,12,28);
 
-        $myDateCollection = new \Programster\DateTime\LocalDateCollection(
-            \Brick\DateTime\LocalDate::of(2020,12,26),
+        $myDateCollection = new LocalDateCollection(
+            LocalDate::of(2020,12,26),
             $undesiredDate1,
             $undesiredDate2,
-            \Brick\DateTime\LocalDate::of(2020,12,28),
+            LocalDate::of(2020,12,28),
         );
 
         $collectionWithoutUndesiredDates = $myDateCollection->withoutDates($undesiredDate1, $undesiredDate2);
@@ -37,7 +40,7 @@ class TestWithoutDatesInCollection implements TestInterface
 
         foreach ($copy as $dateToCheck)
         {
-            /* @var $dateToCheck \Brick\DateTime\LocalDate */
+            /* @var $dateToCheck LocalDate */
             if ($dateToCheck->compareTo($undesiredDate1) === 0)
             {
                 $this->m_passed = false;

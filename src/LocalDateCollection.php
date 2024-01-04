@@ -5,11 +5,15 @@ declare(strict_types = 1);
 namespace Programster\DateTime;
 
 
+use ArrayObject;
 use Brick\DateTime\LocalDate;
+use DateTime;
+use Exception;
 
-final class LocalDateCollection extends \ArrayObject
+
+final class LocalDateCollection extends ArrayObject
 {
-    public function __construct(\Brick\DateTime\LocalDate ...$dates)
+    public function __construct(LocalDate ...$dates)
     {
         parent::__construct($dates);
     }
@@ -30,7 +34,7 @@ final class LocalDateCollection extends \ArrayObject
 
         foreach ($dates as $dateString)
         {
-            $datetime = \DateTime::createFromFormat($format, $dateString);
+            $datetime = DateTime::createFromFormat($format, $dateString);
             $localDates[] = LocalDate::fromNativeDateTime($datetime);
         }
 
@@ -38,9 +42,9 @@ final class LocalDateCollection extends \ArrayObject
     }
 
 
-    public function append($value)
+    public function append($value): void
     {
-        if ($value instanceof \Brick\DateTime\LocalDate)
+        if ($value instanceof LocalDate)
         {
             parent::append($value);
         }
@@ -51,11 +55,11 @@ final class LocalDateCollection extends \ArrayObject
     }
 
 
-    public function offsetSet($index, $newval)
+    public function offsetSet($key, $value): void
     {
-        if ($newval instanceof \Brick\DateTime\LocalDate)
+        if ($value instanceof LocalDate)
         {
-            parent::offsetSet($index, $newval);
+            parent::offsetSet($key, $value);
         }
         else
         {
@@ -78,7 +82,8 @@ final class LocalDateCollection extends \ArrayObject
 
         foreach ($dates as $index => $date)
         {
-            if (in_array($date->getDayOfWeek()->getValue(), $weekendDays))
+            /* @var $date LocalDate */
+            if (in_array($date->getDayOfWeek()->value, $weekendDays))
             {
                 unset($dates[$index]);
             }
@@ -107,7 +112,7 @@ final class LocalDateCollection extends \ArrayObject
      * @param LocalDate ...$dates - the dates we do not wish to contain.
      * @return LocalDateCollection - the new (modified) copy of the collection
      */
-    public function withoutDates(LocalDate ...$dates)
+    public function withoutDates(LocalDate ...$dates) : LocalDateCollection
     {
         return $this->withoutDatesInCollection(new LocalDateCollection(...$dates));
     }
@@ -118,15 +123,14 @@ final class LocalDateCollection extends \ArrayObject
      * @param $format - optionally change the format of the strings. Default is Y-m-d to match MySQL and PgSQL
      * @return array
      */
-    public function getArrayOfStringsForm($format = 'Y-m-d')
+    public function getArrayOfStringsForm(string $format = 'Y-m-d') : array
     {
         $newForm = [];
-
         $dates = $this->getArrayCopy();
 
         foreach ($dates as $date)
         {
-            /* @var $date \Brick\DateTime\LocalDate */
+            /* @var $date LocalDate */
             $newForm[] = $date->toNativeDateTime()->format($format);
         }
 
