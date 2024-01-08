@@ -10,10 +10,23 @@ namespace Programster\DateTime;
 
 use Brick\DateTime\LocalDate;
 use Brick\DateTime\LocalDateRange;
+use Programster\CoreLibs\TimeZoneEnum;
 
 
 final class TimeLib
 {
+    /**
+     * Creates a Brick library Timezone from the Programster TimeZoneEnum enum.
+     * @param TimeZoneEnum $timezone - an enum for the timezone.
+     * @return \Brick\DateTime\TimeZone
+     * @throws \Exception
+     */
+    public static function brickTimeZone(TimeZoneEnum $timezone) : \Brick\DateTime\TimeZone
+    {
+        return \Brick\DateTime\TimeZone::fromNativeDateTimeZone($timezone->toDateTimeZone());
+    }
+
+
     /**
      * Returns the largest set of contiguous dates within the provided dates
      * @param bool $includeDuplicates - whether to include any duplicate dates in the subset or not. If false, then the
