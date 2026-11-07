@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Test that the getDatesIntersection() method works.
+ * Test that the getDatesIntersection() method works, including with no collections and with duplicate dates.
  */
 
 declare(strict_types = 1);
@@ -10,7 +10,7 @@ use Brick\DateTime\LocalDate;
 use Programster\DateTime\LocalDateCollection;
 use Programster\DateTime\TimeLib;
 
-class TestDatesIntersection implements TestInterface
+final class TestDatesIntersection implements TestInterface
 {
     private bool $m_passed;
 
@@ -21,7 +21,7 @@ class TestDatesIntersection implements TestInterface
     }
 
 
-    public function run()
+    public function run() : void
     {
         $dayBefore = LocalDate::of(2024, 2, 28);
 
@@ -36,15 +36,21 @@ class TestDatesIntersection implements TestInterface
             new LocalDateCollection($dayBefore, $dayAfter),
         );
 
-        if (count($intersectionCollection) === 1)
-        {
-            $this->m_passed = true;
-        }
+        $duplicatesIntersection = TimeLib::getDatesIntersection(
+            new LocalDateCollection($leapDay, $leapDay, $dayAfter),
+            new LocalDateCollection($leapDay),
+        );
+
+        $this->m_passed = (
+               count($intersectionCollection) === 1
+            && $intersectionCollection[0]->isEqualTo($dayBefore)
+            && count($duplicatesIntersection) === 1
+            && $duplicatesIntersection[0]->isEqualTo($leapDay)
+            && count(TimeLib::getDatesIntersection()) === 0
+        );
     }
 
 
-    public function getPassed(): bool
-    {
-        return $this->m_passed;
-    }
+    # Accessors
+    public function getPassed() : bool { return $this->m_passed; }
 }

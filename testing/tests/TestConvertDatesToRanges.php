@@ -1,14 +1,16 @@
 <?php
 
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Test that convertDatesToContiguousDateRanges() groups unordered dates into the right contiguous ranges.
  */
 
 declare(strict_types = 1);
 
-class TestConvertDatesToRanges implements TestInterface
+use Brick\DateTime\LocalDate;
+use Brick\DateTime\TimeZone;
+use Programster\DateTime\TimeLib;
+
+final class TestConvertDatesToRanges implements TestInterface
 {
     private bool $m_passed;
 
@@ -19,21 +21,18 @@ class TestConvertDatesToRanges implements TestInterface
     }
 
 
-    public function run()
+    public function run() : void
     {
-        $this->m_passed = false;
-
-        $dayBeforeLeapDay = Brick\DateTime\LocalDate::of(2000, 2, 28);
+        $dayBeforeLeapDay = LocalDate::of(2000, 2, 28);
 
         // 29th of february is the next leap day.
-        $leapDay = Brick\DateTime\LocalDate::of(2000, 2, 29);
+        $leapDay = LocalDate::of(2000, 2, 29);
 
-        $dayAfterLeapDay = Brick\DateTime\LocalDate::of(2000, 3, 1);
-
-        $today = Brick\DateTime\LocalDate::now(\Brick\DateTime\TimeZone::utc());
+        $dayAfterLeapDay = LocalDate::of(2000, 3, 1);
+        $today = LocalDate::now(TimeZone::utc());
         $yesterday = $today->minusDays(1);
 
-        $ranges = Programster\DateTime\TimeLib::convertDatesToContiguousDateRanges(
+        $ranges = TimeLib::convertDatesToContiguousDateRanges(
             $leapDay,
             $today,
             $dayBeforeLeapDay,
@@ -41,23 +40,16 @@ class TestConvertDatesToRanges implements TestInterface
             $yesterday,
         );
 
-        /* @var $range \Brick\DateTime\LocalDateRange */
-        if
-        (
+        $this->m_passed = (
                count($ranges) === 2
-            && $ranges[0]->getStart() === $dayBeforeLeapDay
-            && $ranges[0]->getEnd() === $dayAfterLeapDay
-            && $ranges[1]->getStart() === $yesterday
-            && $ranges[1]->getEnd() === $today
-        )
-        {
-            $this->m_passed = true;
-        }
+            && $ranges[0]->getStart()->isEqualTo($dayBeforeLeapDay)
+            && $ranges[0]->getEnd()->isEqualTo($dayAfterLeapDay)
+            && $ranges[1]->getStart()->isEqualTo($yesterday)
+            && $ranges[1]->getEnd()->isEqualTo($today)
+        );
     }
 
 
-    public function getPassed(): bool
-    {
-        return $this->m_passed;
-    }
+    # Accessors
+    public function getPassed() : bool { return $this->m_passed; }
 }

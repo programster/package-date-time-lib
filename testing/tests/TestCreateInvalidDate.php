@@ -1,14 +1,15 @@
 <?php
 
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Test that Brick refuses to create a date that doesn't exist.
  */
 
 declare(strict_types = 1);
 
-class TestCreateInvalidDate implements TestInterface
+use Brick\DateTime\DateTimeException;
+use Brick\DateTime\LocalDate;
+
+final class TestCreateInvalidDate implements TestInterface
 {
     private bool $m_passed;
 
@@ -19,22 +20,20 @@ class TestCreateInvalidDate implements TestInterface
     }
 
 
-    public function run()
+    public function run() : void
     {
         try
         {
-            $nonExistentDate = Brick\DateTime\LocalDate::of(2024, 2, 30);
+            LocalDate::of(2024, 2, 30);
             $this->m_passed = false;
         }
-        catch (Brick\DateTime\DateTimeException $ex)
+        catch (DateTimeException)
         {
             $this->m_passed = true;
         }
     }
 
 
-    public function getPassed(): bool
-    {
-        return $this->m_passed;
-    }
+    # Accessors
+    public function getPassed() : bool { return $this->m_passed; }
 }

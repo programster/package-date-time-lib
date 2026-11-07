@@ -18,12 +18,17 @@
         "brick/date-time": "^0.6"
     },
     "require-dev": {
-        "irap/autoloader": "1.0.*",
-        "programster/core-libs": "^2.3.1"
+        "programster/autoloader": "^1.0.3"
     },
     "autoload": {
         "psr-4": {
             "Programster\\DateTime\\": "src/"
         }
+    },
+    "scripts": {
+        "test": "php testing/main.php"
+    },
+    "scripts-descriptions": {
+        "test": "Runs the tests, exiting with 1 if any of them fail."
     }
 }

@@ -8,6 +8,6 @@ declare(strict_types = 1);
 
 interface TestInterface
 {
-    public function run();
+    public function run() : void;
     public function getPassed() : bool;
 }

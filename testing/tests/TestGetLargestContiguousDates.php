@@ -1,16 +1,17 @@
 <?php
 
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Test that getLargestContiguousDatesSubset() finds the largest run of consecutive dates, with and without duplicates.
  */
 
 declare(strict_types = 1);
 
-class TestGetLargestContiguousDates implements TestInterface
+use Brick\DateTime\LocalDate;
+use Programster\DateTime\TimeLib;
+
+final class TestGetLargestContiguousDates implements TestInterface
 {
-    private $m_passed;
+    private bool $m_passed;
 
 
     public function __construct()
@@ -19,45 +20,46 @@ class TestGetLargestContiguousDates implements TestInterface
     }
 
 
-    public function run()
+    public function run() : void
     {
-        $this->m_passed = true;
-
-        $dayBefore = Brick\DateTime\LocalDate::of(2024, 2, 28);
+        $dayBefore = LocalDate::of(2024, 2, 28);
 
         // 29th of february is the next leap day.
-        $leapDay = Brick\DateTime\LocalDate::of(2024, 2, 29);
+        $leapDay = LocalDate::of(2024, 2, 29);
 
-        $dayAfter = Brick\DateTime\LocalDate::of(2024, 3, 1);
+        $dayAfter = LocalDate::of(2024, 3, 1);
+        $noDuplicates = TimeLib::getLargestContiguousDatesSubset(false, $leapDay, $dayAfter, $dayBefore);
 
+        $duplicatesExcluded = TimeLib::getLargestContiguousDatesSubset(
+            false,
+            $leapDay,
+            $dayAfter,
+            $dayBefore,
+            $dayAfter,
+            $leapDay
+        );
 
-        if (count(Programster\DateTime\TimeLib::getLargestContiguousDatesSubset(false, $leapDay, $dayAfter, $dayBefore)) !== 3)
-        {
-            $this->m_passed = false;
-        }
+        $duplicatesIncluded = TimeLib::getLargestContiguousDatesSubset(
+            true,
+            $leapDay,
+            $dayAfter,
+            $dayBefore,
+            $dayAfter,
+            $leapDay
+        );
 
-        // dupes 1
-        if (count(Programster\DateTime\TimeLib::getLargestContiguousDatesSubset(false, $leapDay, $dayAfter, $dayBefore, $dayAfter, $leapDay)) !== 3)
-        {
-            $this->m_passed = false;
-        }
+        $withGap = TimeLib::getLargestContiguousDatesSubset(false, $dayBefore, $dayAfter);
 
-        // dupes 2
-        if (count(Programster\DateTime\TimeLib::getLargestContiguousDatesSubset(true, $leapDay, $dayAfter, $dayBefore, $dayAfter, $leapDay)) !== 5)
-        {
-            $this->m_passed = false;
-        }
-
-        // test a gap
-        if (count(Programster\DateTime\TimeLib::getLargestContiguousDatesSubset(false, $dayBefore, $dayAfter)) !== 1)
-        {
-            $this->m_passed = false;
-        }
+        $this->m_passed = (
+               count($noDuplicates) === 3
+            && count($duplicatesExcluded) === 3
+            && count($duplicatesIncluded) === 5
+            && count($withGap) === 1
+            && count(TimeLib::getLargestContiguousDatesSubset(false)) === 0
+        );
     }
 
 
-    public function getPassed(): bool
-    {
-        return $this->m_passed;
-    }
+    # Accessors
+    public function getPassed() : bool { return $this->m_passed; }
 }

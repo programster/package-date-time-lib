@@ -1,14 +1,17 @@
 <?php
 
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Test that withoutWeekends() removes the weekend dates, using the default weekend and a custom one.
  */
 
 declare(strict_types = 1);
 
-class TestRemoveWeekendsFromLocalDateCollection implements TestInterface
+use Brick\DateTime\DayOfWeek;
+use Brick\DateTime\LocalDate;
+use Brick\DateTime\LocalDateRange;
+use Programster\DateTime\TimeLib;
+
+final class TestRemoveWeekendsFromLocalDateCollection implements TestInterface
 {
     private bool $m_passed;
 
@@ -19,37 +22,26 @@ class TestRemoveWeekendsFromLocalDateCollection implements TestInterface
     }
 
 
-    public function run(): void
+    public function run() : void
     {
-        try
-        {
-            $this->m_passed = true;
-            $startDate = \Brick\DateTime\LocalDate::of(2022, 07, 1);
-            $endDate = \Brick\DateTime\LocalDate::of(2022, 07, 31);
-            $dateRange = \Brick\DateTime\LocalDateRange::of($startDate, $endDate);
-            $dates = \Programster\DateTime\TimeLib::convertDateRangeToDateCollection($dateRange);
-            $datesWithoutWeekends = $dates->withoutWeekends();
-            $arrayOfDates = $datesWithoutWeekends->getArrayCopy();
+        // July 2022 has 31 days, 10 of which are Saturdays or Sundays, and 5 of which are Fridays.
+        $dateRange = LocalDateRange::of(LocalDate::of(2022, 7, 1), LocalDate::of(2022, 7, 31));
+        $dates = TimeLib::convertDateRangeToDateCollection($dateRange);
+        $datesWithoutWeekends = $dates->withoutWeekends();
+        $datesWithoutFridays = $dates->withoutWeekends([DayOfWeek::FRIDAY]);
+        $this->m_passed = (count($datesWithoutWeekends) === 21 && count($datesWithoutFridays) === 26);
 
-            foreach ($arrayOfDates as $localDate)
+        foreach ($datesWithoutWeekends as $localDate)
+        {
+            /* @var $localDate LocalDate */
+            if ($localDate->getDayOfWeek()->isWeekend())
             {
-                /* @var $localDate \Brick\DateTime\LocalDate */
-                if (in_array($localDate->getDayOfWeek()->value, [6,7]))
-                {
-                    $this->m_passed = false;
-                    break;
-                }
+                $this->m_passed = false;
             }
         }
-        catch (Brick\DateTime\DateTimeException $ex)
-        {
-            $this->m_passed = false;
-        }
     }
 
 
-    public function getPassed(): bool
-    {
-        return $this->m_passed;
-    }
+    # Accessors
+    public function getPassed() : bool { return $this->m_passed; }
 }

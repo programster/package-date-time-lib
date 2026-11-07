@@ -1,14 +1,15 @@
 <?php
 
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Test that Brick allows the 29th of February in a leap year, but not in other years.
  */
 
 declare(strict_types = 1);
 
-class TestLeapYear implements TestInterface
+use Brick\DateTime\DateTimeException;
+use Brick\DateTime\LocalDate;
+
+final class TestLeapYear implements TestInterface
 {
     private bool $m_passed;
 
@@ -19,15 +20,15 @@ class TestLeapYear implements TestInterface
     }
 
 
-    public function run()
+    public function run() : void
     {
         try
         {
-            // 29th of february 2024 is the next leap day.
-            $leapDay = Brick\DateTime\LocalDate::of(2024, 2, 29);
+            // 2024 is a leap year, so the 29th of February exists.
+            LocalDate::of(2024, 2, 29);
             $this->m_passed = true;
         }
-        catch (Brick\DateTime\DateTimeException $ex)
+        catch (DateTimeException)
         {
             $this->m_passed = false;
         }
@@ -36,11 +37,11 @@ class TestLeapYear implements TestInterface
         {
             try
             {
-                // 29th of february in 2023 is NOT a leap year, should throw exception
-                $leapDay = Brick\DateTime\LocalDate::of(2023, 2, 29);
+                // 2023 is NOT a leap year, so this should throw an exception.
+                LocalDate::of(2023, 2, 29);
                 $this->m_passed = false;
             }
-            catch (Brick\DateTime\DateTimeException $ex)
+            catch (DateTimeException)
             {
                 $this->m_passed = true;
             }
@@ -48,8 +49,6 @@ class TestLeapYear implements TestInterface
     }
 
 
-    public function getPassed(): bool
-    {
-        return $this->m_passed;
-    }
+    # Accessors
+    public function getPassed() : bool { return $this->m_passed; }
 }
